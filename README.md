@@ -1,4 +1,4 @@
-# OpenCode Desktop: Restore Legacy Sidebar UI (Windows, 1.18.31 to 1.18.35)
+# OpenCode Desktop: Restore Legacy Sidebar UI (Windows, 1.18.31 to 1.19.0)
 
 Hate the new tab layout? This script brings back the old sidebar and session list
 in **OpenCode Desktop** on Windows with a single command.
@@ -53,7 +53,7 @@ patch. Just close OpenCode and run the script again after each update.
 ## Requirements
 
 - Windows
-- OpenCode Desktop **1.18.31 to 1.18.35** (other versions abort unless every pattern matches)
+- OpenCode Desktop **1.18.31 to 1.19.0** (other versions abort unless every pattern matches)
 - Node.js (`npx @electron/asar` is used for extract and pack)
 - OpenCode fully quit before running (the script refuses to run otherwise,
   because patching while Electron holds the file leaves the old code in memory)
