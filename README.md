@@ -58,6 +58,43 @@ patch. Just close OpenCode and run the script again after each update.
 - OpenCode fully quit before running (the script refuses to run otherwise,
   because patching while Electron holds the file leaves the old code in memory)
 
+## Troubleshooting: moved repo does not show up as its own project
+
+OpenCode Desktop derives a project's identity from its git remote URL. The URL
+is normalized first (host lowercased, `.git` suffix stripped, path case kept),
+so two folders with the same remote always resolve to the same project. The
+second folder is then registered as a "sandbox" of the first one: it never
+shows up as its own project, the sidebar remap removes it, and the app may
+open the wrong directory. This bites when a repo moves to a new path after
+OpenCode already knew it somewhere else (this project was developed in
+`Documents\Projects\Test` before moving to `Documents\GitHub\opencode-legacy-ui`,
+so the new folder kept resolving to the old project).
+
+To split the two folders apart:
+
+1. Give the moved folder a distinct remote string. GitHub treats repo paths
+   case-insensitively, so a case variant still fetches and pushes to the same
+   repo:
+
+   ```powershell
+   git remote set-url origin https://github.com/nopeion/OpenCode-Legacy-UI.git
+   git ls-remote --heads origin
+   ```
+
+2. Delete the stale identity cache (OpenCode rewrites it on the next start):
+
+   ```powershell
+   Remove-Item .git\opencode -ErrorAction SilentlyContinue
+   ```
+
+3. Close OpenCode and remove the leftover server-side mapping. It lives in
+   `%USERPROFILE%\.local\share\opencode\opencode.db` (back it up first):
+   delete `project_directory` rows whose `directory` matches the folder, and
+   drop that path from the `sandboxes` array of the old project row.
+
+4. Start OpenCode. The folder now resolves to a fresh project identity and
+   stays in the sidebar.
+
 ## Rollback
 
 Every run creates timestamped backups:
