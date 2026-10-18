@@ -162,7 +162,8 @@ if (-not $inner.general) { $inner | Add-Member -NotePropertyName general -NotePr
 $inner.general.newLayoutDesigns = $false
 if ($inner.general.layoutTransitionEligible -isnot [bool]) { $inner.general.layoutTransitionEligible = $true }
 $outer.'settings.v3' = ($inner | ConvertTo-Json -Depth 20 -Compress)
-$outer | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $defaultDat -Encoding UTF8
+# Write without BOM: the app JSON.parses this file on startup, a UTF-8 BOM breaks it.
+[IO.File]::WriteAllText($defaultDat, ($outer | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
 Write-Host "default.dat updated (backup taken). newLayoutDesigns=false."
 
 Write-Host "`n=== DONE ===" -ForegroundColor Green
