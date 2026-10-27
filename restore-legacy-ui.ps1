@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Restore the legacy sidebar/session layout in OpenCode Desktop 1.18.31 to 1.19.3 (Windows).
+  Restore the legacy sidebar/session layout in OpenCode Desktop 1.18.31 to 1.19.4 (Windows).
 
 .DESCRIPTION
   OpenCode Desktop retires the old sidebar layout after 2026-09-14
@@ -9,7 +9,7 @@
   all five enforcement points, and sets newLayoutDesigns=false in
   the persisted settings. Provider/API settings are untouched.
 
-  Tested on: OpenCode Desktop 1.18.31 to 1.19.3, Windows.
+  Tested on: OpenCode Desktop 1.18.31 to 1.19.4, Windows.
   Other versions: the script aborts unless every expected pattern is
   found or already patched, so it fails safe instead of corrupting.
 
@@ -73,8 +73,13 @@ $pkgFile = Join-Path $tmp "package.json"
 if (Test-Path -LiteralPath $pkgFile) {
   $ver = (Get-Content -LiteralPath $pkgFile -Raw | ConvertFrom-Json).version
   Write-Host "Detected app version: $ver"
-  if ($ver -notin @("1.18.31", "1.18.35", "1.19.0", "1.19.3")) {
-    Write-Host "WARNING: this script was tested on 1.18.31 to 1.19.3. Continuing, but it aborts if patterns do not match." -ForegroundColor Yellow
+  if ($ver -match '^2\.') {
+    Write-Host "ERROR: OpenCode Desktop 2.x removed the old interface code entirely - there is no layout switch left to patch." -ForegroundColor Red
+    Write-Host "The legacy UI cannot be restored on 2.x. If you need it, use a 1.x release (last: 1.19.4)."
+    exit 1
+  }
+  if ($ver -notin @("1.18.31", "1.18.35", "1.19.0", "1.19.3", "1.19.4")) {
+    Write-Host "WARNING: this script was tested on 1.18.31 to 1.19.4. Continuing, but it aborts if patterns do not match." -ForegroundColor Yellow
   }
 }
 
